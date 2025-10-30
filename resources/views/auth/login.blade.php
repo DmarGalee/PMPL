@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk</title>
-    <link rel="icon" href="{{ asset('logo.png') }}" type="image/x-icon"/>
+    <link rel="icon" href="{{ asset('logo.png') }}" type="image/x-icon" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -156,7 +156,7 @@
                         dalam kondisi terbaik.
                     </p>
 
-                    <form class="space-y-5" action="{{ route('postlogin') }}" method="POST" id="loginForm" novalidate>
+                    <form class="space-y-5" action="{{ route('postlogin') }}" method="POST" id="loginForm" novalidate data-testid="form-login">
                         @csrf
 
                         <div>
@@ -168,7 +168,8 @@
                                 <input id="identitas" name="identitas" type="text" autocomplete="identitas" required
                                     placeholder="Identitas NIM / NIP"
                                     class="form-input block w-full rounded-lg shadow-sm sm:text-sm placeholder-gray-400"
-                                    aria-describedby="identitas-error" value="{{ old('identitas') }}">
+                                    aria-describedby="identitas-error" value="{{ old('identitas') }}"
+                                    data-testid="input-identitas">
                             </div>
                             <p id="identitas-error" class="error-message">Identitas minimal 5 karakter!</p>
                         </div>
@@ -182,7 +183,7 @@
                                 <input id="password" name="password" type="password" autocomplete="current-password"
                                     required placeholder="Password"
                                     class="form-input block w-full rounded-lg shadow-sm sm:text-sm pr-10 placeholder-gray-400"
-                                    aria-describedby="password-error">
+                                    aria-describedby="password-error" data-testid="input-password">
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                                     <button type="button" id="togglePassword"
                                         class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-indigo-500 rounded"
@@ -196,7 +197,8 @@
 
                         <div class="flex items-center gap-4 pt-2">
                             <button type="submit" id="submitButton"
-                                class="flex-1 flex items-center justify-center w-full rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition disabled:opacity-60 disabled:cursor-not-allowed btn-primary">
+                                class="flex-1 flex items-center justify-center w-full rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition disabled:opacity-60 disabled:cursor-not-allowed btn-primary"
+                                data-testid="btn-masuk"> <!-- TAMBAHKAN BARIS INI -->
                                 Masuk
                             </button>
                         </div>

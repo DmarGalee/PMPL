@@ -1,18 +1,16 @@
-import { test, expect } from '@playwright/test';
+// import { test, expect } from '@playwright/test';
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+// test('admin bisa login dengan identitas', async ({ page }) => {
+//   await page.goto('/login');
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
+//   // PAKAI DATA DARI SEEDER KAMU
+//   await page.fill('[data-testid="input-identitas"]', '1111111111');
+//   await page.fill('[data-testid="input-password"]', '12345');
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+//   await page.click('[data-testid="btn-masuk"]');
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
-
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
-});
+//   // Harus masuk ke dashboard
+//   await expect(page).toHaveURL(/admin/);
+  
+//   await expect(page.locator('[data-testid="page-admin-dasbor"]')).toBeVisible();
+// });

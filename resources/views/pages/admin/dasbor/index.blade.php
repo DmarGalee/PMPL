@@ -1,7 +1,7 @@
 @extends('layouts.main')
 @section('judul', 'Dasbor Pelaporan Fasilitas')
 @section('content')
-    <div class="container mx-auto px-4 py-4">
+    <div class="container mx-auto px-4 py-4" data-testid="page-admin-dasbor">
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -89,7 +89,7 @@
                         </button>
 
                         <button class="p-4 text-center border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                            onclick="window.location.href='{{ route('admin.fasilitas') }}'">
+                            onclick="window.location.href='{{ route('admin.fasilitas') }}'" data-testid="btn-manajemen-fasilitas">
                             <i class="bi bi-gear-wide-connected text-green-600 text-2xl mb-2"></i>
                             <p class="text-sm font-medium text-gray-900 font-['Open_Sans']">Manajemen Fasilitas</p>
                         </button>

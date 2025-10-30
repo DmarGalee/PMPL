@@ -2,9 +2,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "app": "concurrently -n \"server,vite\" -c \"#93c5fd,#c4b5fd\" \"php artisan serve\" \"npm run dev\""
+    "test": "playwright test",
+    "test:report": "playwright test && playwright show-report --port 9324",
+    "test:clean": "playwright test && taskkill /IM node.exe /F || echo 'No node process to kill'",
+    "test:full": "playwright test && taskkill /IM node.exe /F && playwright show-report --port 9324"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
@@ -15,5 +16,19 @@
   },
   "dependencies": {
     "concurrently": "^9.1.2"
-  }
+  },
+  "name": "pmpl",
+  "version": "1.0.0",
+  "description": "**Sistem Manajemen Pelaporan dan Perbaikan Fasilitas Kampus** adalah platform berbasis web yang dirancang untuk menyederhanakan proses pelaporan, pengelolaan, dan perbaikan fasilitas kampus di **Jurusan Teknologi Informasi**, dan akan dikembangkan ke seluruh **Politeknik Negeri Malang (Polinema)**. Sistem ini mengatasi ketidakefisienan proses pelaporan manual dengan menyediakan solusi digital yang memungkinkan pelaporan secara real-time, pelacakan transparan, dan pengelolaan perbaikan berbasis prioritas untuk fasilitas akademik seperti ruang kelas, laboratorium komputer, peralatan IT, dan infrastruktur jaringan.",
+  "main": "vite.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github-putra1688:DmarGalee/PMPL.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

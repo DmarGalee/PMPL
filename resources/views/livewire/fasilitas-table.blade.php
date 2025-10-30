@@ -38,7 +38,7 @@
         </div>
 
         {{-- + --}}
-        <button wire:click="openModal" class="btn btn-primary">
+        <button wire:click="openModal" class="btn btn-primary" data-testid="btn-tambah-fasilitas">
               <i class="fas fa-fas fa-plus text-white"></i>
         </button>
     </div>
@@ -127,7 +127,7 @@
 
     {{-- modal add/edit --}}
     @if($showModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" data-testid="modal-tambah-fasilitas">
             <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold">
@@ -146,7 +146,7 @@
                         <label class="label">
                             <span class="label-text">Gedung <span class="text-red-500">*</span></span>
                         </label>
-                        <select wire:model.live="selectedGedung" class="select select-bordered w-full">
+                        <select wire:model.live="selectedGedung" class="select select-bordered w-full" data-testid="select-gedung">
                             <option value="">Pilih Gedung</option>
                             @foreach($allGedungs as $gedung)
                                 <option value="{{ $gedung->gedung_id }}">{{ $gedung->gedung_nama }}</option>
@@ -160,7 +160,7 @@
                             <span class="label-text">Lantai <span class="text-red-500">*</span></span>
                         </label>
                         <select wire:model.live="selectedLantai" class="select select-bordered w-full"
-                                {{ !$selectedGedung ? 'disabled' : '' }}>
+                                {{ !$selectedGedung ? 'disabled' : '' }} data-testid="select-lantai">
                             <option value="">Pilih Lantai</option>
                             @foreach($formLantais as $lantai)
                                 <option value="{{ $lantai->lantai_id }}">{{ $lantai->lantai_nama }}</option>
@@ -174,7 +174,7 @@
                             <span class="label-text">Ruangan <span class="text-red-500">*</span></span>
                         </label>
                         <select wire:model.live="selectedRuang" class="select select-bordered w-full"
-                                {{ !$selectedLantai ? 'disabled' : '' }}>
+                                {{ !$selectedLantai ? 'disabled' : '' }} data-testid="select-ruang">
                             <option value="">Pilih Ruangan</option>
                             @foreach($formRuangs as $ruang)
                                 <option value="{{ $ruang->ruang_id }}">{{ $ruang->ruang_nama }}</option>
@@ -190,7 +190,7 @@
                         <label class="label">
                             <span class="label-text">Barang <span class="text-red-500">*</span></span>
                         </label>
-                        <select wire:model.live="selectedBarang" class="select select-bordered w-full">
+                        <select wire:model.live="selectedBarang" class="select select-bordered w-full" data-testid="select-barang">
                             <option value="">Pilih Barang</option>
                             @foreach($barangs as $barang)
                                 <option value="{{ $barang->barang_id }}">{{ $barang->barang_nama }}</option>
@@ -219,7 +219,8 @@
                                        wire:model.live="fasilitasNumber"
                                        class="input input-bordered w-full text-center"
                                        placeholder="01"
-                                       maxlength="3">
+                                       maxlength="3"
+                                       data-testid="input-fasilitas-number">
                             </div>
                         </div>
                         @if ($errors->has('fasilitasNumber'))
@@ -240,7 +241,7 @@
                         <label class="label">
                             <span class="label-text">Status <span class="text-red-500">*</span></span>
                         </label>
-                        <select wire:model="fasilitasStatus" class="select select-bordered w-full">
+                        <select wire:model="fasilitasStatus" class="select select-bordered w-full" data-testid="select-status">
                             <option value="Baik">Baik</option>
                             <option value="Dalam Perbaikan">Dalam Perbaikan</option>
                             <option value="Rusak">Rusak</option>
@@ -253,7 +254,7 @@
                     {{-- simpan apa update hayo --}}
                     <div class="flex justify-end gap-2">
                         <button type="button" wire:click="closeModal" class="btn btn-sm btn-outline">Batal</button>
-                        <button type="submit" class="btn btn-sm btn-primary text-white">
+                        <button type="submit" class="btn btn-sm btn-primary text-white" data-testid="btn-simpan-fasilitas">
                             {{ $editingId ? 'Perbarui Fasilitas' : 'Simpan Fasilitas' }}
                         </button>
                     </div>
