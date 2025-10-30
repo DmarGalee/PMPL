@@ -20,12 +20,6 @@ jobs:
           path: node_modules
           key: node-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Cache Playwright
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-
       # === Setup ===
       - name: Setup PHP 8.2
         uses: shivammathur/setup-php@v2
@@ -37,7 +31,7 @@ jobs:
         with:
           node-version: '18'
 
-      # === Install (hanya jika cache miss) ===
+      # === Install ===
       - name: Install Composer
         if: steps.cache-composer.outputs.cache-hit != 'true'
         run: composer install --no-dev --optimize-autoloader
@@ -47,14 +41,15 @@ jobs:
         run: npm ci
 
       - name: Install Playwright
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: npx playwright install chromium
 
-      # === Laravel Setup (SQLite) ===
+      # === Laravel Setup (SQLITE) ===
       - name: Setup DB
         run: |
-          cp .env.example .env.testing
+          cp .env.testing .env.testing  # Pastikan file ada
           php artisan key:generate --env=testing
+          mkdir -p database
+          touch database/database.sqlite
           php artisan migrate:fresh --env=testing
           php artisan db:seed --class=RoleSeeder --env=testing
           php artisan db:seed --class=UserSeeder --env=testing
@@ -62,13 +57,24 @@ jobs:
       # === Start Server ===
       - name: Start Server
         run: |
-          php artisan serve --host=127.0.0.1 --port=8000 --env=testing &
-          npm install -g wait-on
-          wait-on http://127.0.0.1:8000 -t 30000
+          php artisan serve --host=127.0.0.1 --port=8000 --env=testing > /dev/null 2>&1 &
 
-      # === Run Test (1 browser, paralel) ===
+      # === Tunggu Server ===
+      - name: Wait for Server
+        run: |
+          for i in {1..30}; do
+            if curl -f http://127.0.0.1:8000 > /dev/null 2>&1; then
+              echo "Server ready!"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Server timeout!"
+          exit 1
+
+      # === Run Test ===
       - name: Run Tests
-        run: npx playwright test --workers=4
+        run: npx playwright test --project=chromium
 
       # === Upload Report ===
       - name: Upload Report
