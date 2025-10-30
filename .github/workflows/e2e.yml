@@ -4,34 +4,52 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    # === Tambahkan MySQL Service Container ===
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ''           # Password kosong
+          MYSQL_DATABASE: pmpl_test_db      # DB sesuai .env.testing
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes   # Izinkan root tanpa password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h127.0.0.1 --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       - uses: actions/checkout@v4
 
-      # === Cache ===
+      # === Setup PHP & Node ===
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, bcmath, pdo_mysql
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # === Cache (Opsional, percepat run berikutnya) ===
       - name: Cache Composer
         uses: actions/cache@v4
         with:
           path: vendor
           key: composer-${{ hashFiles('**/composer.lock') }}
 
-      - name: Cache Node
+      - name: Cache Node Modules
         uses: actions/cache@v4
         with:
           path: node_modules
           key: node-${{ hashFiles('**/package-lock.json') }}
 
-      # === Setup ===
-      - name: Setup PHP 8.2
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      # === Install ===
+      # === Install Dependencies ===
       - name: Install Composer
         if: steps.cache-composer.outputs.cache-hit != 'true'
         run: composer install --no-dev --optimize-autoloader
@@ -40,46 +58,59 @@ jobs:
         if: steps.cache-node.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Install Playwright
+      - name: Install Playwright (Chromium Only)
         run: npx playwright install chromium
 
-      # === Laravel Setup (SQLITE) ===
-      - name: Setup DB
+      # === Setup Laravel (Gunakan .env.testing) ===
+      - name: Setup Laravel DB
         run: |
-          cp .env.testing .env.testing  # Pastikan file ada
+          # Pastikan .env.testing ada
+          cp .env.testing .env.testing
           php artisan key:generate --env=testing
-          mkdir -p database
-          touch database/database.sqlite
+          
+          # Tunggu MySQL siap
+          for i in {1..30}; do
+            if mysqladmin ping -h127.0.0.1 -P3306 --silent; then
+              echo "MySQL ready!"
+              break
+            fi
+            echo "Waiting for MySQL... ($i/30)"
+            sleep 2
+          done
+
+          # Migrate & Seed
           php artisan migrate:fresh --env=testing
           php artisan db:seed --class=RoleSeeder --env=testing
           php artisan db:seed --class=UserSeeder --env=testing
 
-      # === Start Server ===
-      - name: Start Server
+      # === Start Laravel Server ===
+      - name: Start Laravel Server
         run: |
           php artisan serve --host=127.0.0.1 --port=8000 --env=testing > /dev/null 2>&1 &
 
-      # === Tunggu Server ===
-      - name: Wait for Server
+      # === Tunggu Server Ready ===
+      - name: Wait for Laravel Server
         run: |
           for i in {1..30}; do
             if curl -f http://127.0.0.1:8000 > /dev/null 2>&1; then
-              echo "Server ready!"
+              echo "Laravel server ready!"
               exit 0
             fi
+            echo "Waiting for server... ($i/30)"
             sleep 1
           done
           echo "Server timeout!"
           exit 1
 
-      # === Run Test ===
-      - name: Run Tests
-        run: npx playwright test --project=chromium
+      # === Run Playwright Tests (Hanya Chromium di CI) ===
+      - name: Run Playwright Tests
+        run: npx playwright test --project=chromium --workers=2
 
-      # === Upload Report ===
+      # === Upload Report (Selalu) ===
       - name: Upload Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
+          retention-days: 30
