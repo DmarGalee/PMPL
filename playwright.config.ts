@@ -1,27 +1,19 @@
 // playwright.config.ts
-import { defineConfig } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
+  testDir: './tests/e2e',
   reporter: [
-    ['html', { open: 'always', port: 9324 }], // GANTI PORT JADI 9324
-    ['list'],
+    ['html', { open: 'never' }], // Simpan tanpa buka otomatis
+    ['json', { outputFile: 'results.json' }],
   ],
-
   use: {
-    baseURL: 'http://127.0.0.1:8000',
-    headless: true,
-    viewport: { width: 1280, height: 720 },
-    ignoreHTTPSErrors: true,
-    video: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    baseURL: 'http://localhost/PMPL/QA-Simpelfas/public',
+    headless: false,
   },
-
-  webServer: {
-    command: 'php artisan serve --port=8000',
-    port: 8000,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
-
-  globalSetup: './tests/e2e/setup.ts',  // PASTIKAN ADA
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox',  use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit',     use: { ...devices['Desktop Edge'] } },
+  ],
 });
