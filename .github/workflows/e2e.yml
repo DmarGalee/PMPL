@@ -1,36 +1,62 @@
-# .github/workflows/e2e.yml
-name: E2E Tests
-
+name: Playwright Tests
 on: [push, pull_request]
-
 jobs:
-  test:
+  e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 10  # Tambah timeout job
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mysql, pdo_mysql
-
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-
-      - name: Install PHP Dependencies
-        run: composer install --no-dev --optimize-autoloader
-
+          node-version: '18'  # Sesuaikan versi lokal
+      
+      - name: Setup PHP (Laravel)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'  # Sesuaikan versi Laravel
+      
+      - name: Install Composer Dependencies
+        run: composer install --no-progress --no-interaction --optimize-autoloader
+      
       - name: Install Node Dependencies
-        run: npm ci
-
+        run: npm ci  # Atau yarn install --frozen-lockfile
+      
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-
-      - name: Copy Environment File
-        run: cp .env.testing .env
-
-      - name: Run E2E Tests
+        run: npx playwright install --with-deps  # Install deps Ubuntu (fonts, libs)
+      
+      - name: Setup Laravel Testing Environment
+        run: |
+          # Copy .env.example ke .env.testing
+          cp .env.example .env.testing
+          # Generate app key
+          php artisan key:generate --env=testing
+          # Buat DB MySQL (atau gunakan SQLite untuk CI cepat)
+          sudo mysql -e "CREATE DATABASE IF NOT EXISTS pmpl_test_db;"
+          # Migrate + Seed (env testing)
+          php artisan migrate:fresh --env=testing
+          php artisan db:seed --class=RoleSeeder --env=testing
+          php artisan db:seed --class=UserSeeder --env=testing
+      
+      - name: Start Laravel Server (Background)
+        run: |
+          php artisan serve --host=127.0.0.1 --port=8000 --env=testing &
+          # Tunggu server ready (wait-on npm package)
+          npm install -g wait-on
+          wait-on http://127.0.0.1:8000
+      
+      - name: Run Playwright Tests
         run: npx playwright test
+        env:
+          # Secrets GitHub (Settings > Secrets > Actions)
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}  # Jika DB butuh pass
+          # Tambah env lain jika test pakai (e.g., API keys)
+      
+      - name: Upload Report (Selalu, bahkan gagal)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
