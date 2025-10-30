@@ -3,87 +3,72 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    # === Tambah MySQL Service ===
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: pmpl_test_db
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
+      # === Cache ===
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('**/composer.lock') }}
+
+      - name: Cache Node
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Cache Playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+      # === Setup ===
       - name: Setup PHP 8.2
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, xml, bcmath, pdo_mysql
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Install Composer deps
+      # === Install (hanya jika cache miss) ===
+      - name: Install Composer
+        if: steps.cache-composer.outputs.cache-hit != 'true'
         run: composer install --no-dev --optimize-autoloader
 
-      - name: Install Node deps
+      - name: Install NPM
+        if: steps.cache-node.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Install Playwright
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      # === Tunggu MySQL siap ===
-      - name: Wait for MySQL
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y mysql-client
-          until mysqladmin ping -h 127.0.0.1 -P 3306 --silent; do
-            echo "Waiting for MySQL..."
-            sleep 2
-          done
-
-      # === Setup Laravel ===
-      - name: Setup Laravel DB
+      # === Laravel Setup (SQLite) ===
+      - name: Setup DB
         run: |
           cp .env.example .env.testing
           php artisan key:generate --env=testing
-          # Migrate & Seed
           php artisan migrate:fresh --env=testing
           php artisan db:seed --class=RoleSeeder --env=testing
           php artisan db:seed --class=UserSeeder --env=testing
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: pmpl_test_db
-          DB_USERNAME: root
-          DB_PASSWORD: root
 
       # === Start Server ===
-      - name: Start Laravel Server
+      - name: Start Server
         run: |
           php artisan serve --host=127.0.0.1 --port=8000 --env=testing &
           npm install -g wait-on
-          wait-on http://127.0.0.1:8000
+          wait-on http://127.0.0.1:8000 -t 30000
 
-      # === Run Tests ===
-      - name: Run Playwright Tests
-        run: npx playwright test
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: pmpl_test_db
-          DB_USERNAME: root
-          DB_PASSWORD: root
+      # === Run Test (1 browser, paralel) ===
+      - name: Run Tests
+        run: npx playwright test --workers=4
 
       # === Upload Report ===
       - name: Upload Report
