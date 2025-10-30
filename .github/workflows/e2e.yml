@@ -65,7 +65,7 @@ jobs:
       - name: Setup Laravel DB
         run: |
           # Pastikan .env.testing ada
-          cp .env.testing .env.testing
+
           php artisan key:generate --env=testing
           
           # Tunggu MySQL siap
