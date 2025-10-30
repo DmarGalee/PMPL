@@ -15,7 +15,7 @@ jobs:
       - name: Setup PHP (Laravel)
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'  # Sesuaikan versi Laravel
+          php-version: '8.2'  # Sesuaikan versi Laravel
       
       - name: Install Composer Dependencies
         run: composer install --no-progress --no-interaction --optimize-autoloader
