@@ -17,31 +17,37 @@ test('admin bisa tambah fasilitas baru', async ({ page }) => {
   await page.click('[data-testid="btn-tambah-fasilitas"]');
   await expect(page.locator('[data-testid="modal-tambah-fasilitas"]')).toBeVisible();
 
-  // 4. Isi form SECARA BERURUT + TUNGGU ENABLED
+  // 4. Isi form SECARA BERURUT + TUNGGU DATA
   // Pilih Gedung
-  await page.selectOption('[data-testid="select-gedung"]', '1');
-  await page.waitForTimeout(500); // Tunggu Livewire update
+  await page.selectOption('[data-testid="select-gedung"]', { label: 'Gedung TI dan Sipil' });
+  await page.waitForTimeout(1000); // Tunggu Livewire
 
-  // TUNGGU LANTAI ENABLED
+  // === LANTAI ===
   const lantaiSelect = page.locator('[data-testid="select-lantai"]');
-  await lantaiSelect.waitFor({ state: 'visible' });
-  await lantaiSelect.waitFor({ state: 'enabled', timeout: 10000 });
+  await expect(lantaiSelect).toBeEnabled({ timeout: 10000 });
 
-  // Pilih Lantai
-  await lantaiSelect.selectOption('1');
-  await page.waitForTimeout(500);
+  // Tunggu sampai ada opsi (data dimuat)
+  const lantaiOptions = lantaiSelect.locator('option');
+  await expect(await lantaiOptions.count()).toBeGreaterThan(1);
 
-  // TUNGGU RUANG ENABLED
+  await lantaiSelect.selectOption({ label: 'Lantai 5 Barat' });
+  await page.waitForTimeout(1000);
+
+  // === RUANG ===
   const ruangSelect = page.locator('[data-testid="select-ruang"]');
-  await ruangSelect.waitFor({ state: 'enabled', timeout: 10000 });
-  await ruangSelect.selectOption('1');
-  await page.waitForTimeout(500);
+  await expect(ruangSelect).toBeEnabled({ timeout: 10000 });
+
+  const ruangOptions = ruangSelect.locator('option');
+  await expect(await ruangOptions.count()).toBeGreaterThan(1);
+
+  await ruangSelect.selectOption({ label: 'Ruang Teori 01' });
+  await page.waitForTimeout(1000);
 
   // Pilih Barang
-  await page.selectOption('[data-testid="select-barang"]', '1');
+  await page.selectOption('[data-testid="select-barang"]', { label: 'Proyektor' });
 
   // Isi nomor
-  await page.fill('[data-testid="input-fasilitas-number"]', '01');
+  await page.fill('[data-testid="input-fasilitas-number"]', '02');
 
   // Pilih status
   await page.selectOption('[data-testid="select-status"]', 'Baik');
