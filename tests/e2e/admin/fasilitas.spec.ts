@@ -2,60 +2,55 @@
 import { test, expect } from '@playwright/test';
 
 test('admin bisa tambah fasilitas baru', async ({ page }) => {
-  // 1. Login
   await page.goto('/login');
   await page.fill('[data-testid="input-identitas"]', '1111111111');
   await page.fill('[data-testid="input-password"]', '12345');
   await page.click('[data-testid="btn-masuk"]');
   await expect(page).toHaveURL(/admin/);
 
-  // 2. Buka Fasilitas
   await page.click('[data-testid="btn-manajemen-fasilitas"]');
   await expect(page).toHaveURL(/admin\/fasilitas/);
 
-  // 3. Buka Modal
+  const initialCount = await page.locator('table tbody tr').count();
+
   await page.click('[data-testid="btn-tambah-fasilitas"]');
   await expect(page.locator('[data-testid="modal-tambah-fasilitas"]')).toBeVisible();
 
-  // 4. Isi form SECARA BERURUT + TUNGGU DATA
-  // Pilih Gedung
   await page.selectOption('[data-testid="select-gedung"]', { label: 'Gedung TI dan Sipil' });
-  await page.waitForTimeout(1000); // Tunggu Livewire
+  await expect(page.locator('[data-testid="select-lantai"]')).toBeEnabled({ timeout: 10000 });
 
-  // === LANTAI ===
-  const lantaiSelect = page.locator('[data-testid="select-lantai"]');
-  await expect(lantaiSelect).toBeEnabled({ timeout: 10000 });
+  await page.selectOption('[data-testid="select-lantai"]', { label: 'Lantai 5 Barat' });
+  await expect(page.locator('[data-testid="select-ruang"]')).toBeEnabled({ timeout: 10000 });
 
-  // Tunggu sampai ada opsi (data dimuat)
-  const lantaiOptions = lantaiSelect.locator('option');
-  await expect(await lantaiOptions.count()).toBeGreaterThan(1);
-
-  await lantaiSelect.selectOption({ label: 'Lantai 5 Barat' });
-  await page.waitForTimeout(1000);
-
-  // === RUANG ===
-  const ruangSelect = page.locator('[data-testid="select-ruang"]');
-  await expect(ruangSelect).toBeEnabled({ timeout: 10000 });
-
-  const ruangOptions = ruangSelect.locator('option');
-  await expect(await ruangOptions.count()).toBeGreaterThan(1);
-
-  await ruangSelect.selectOption({ label: 'Ruang Teori 01' });
-  await page.waitForTimeout(1000);
-
-  // Pilih Barang
+  await page.selectOption('[data-testid="select-ruang"]', { label: 'Ruang Teori 01' });
   await page.selectOption('[data-testid="select-barang"]', { label: 'Proyektor' });
 
-  // Isi nomor
-  await page.fill('[data-testid="input-fasilitas-number"]', '02');
-
-  // Pilih status
+  const nomorAkhir = (Date.now() % 100 + 1).toString().padStart(2, '0');
+  await page.fill('[data-testid="input-fasilitas-number"]', nomorAkhir);
   await page.selectOption('[data-testid="select-status"]', 'Baik');
 
-  // 5. Simpan
   await page.click('[data-testid="btn-simpan-fasilitas"]');
 
-  // 6. Verifikasi
-  await expect(page.locator('[data-testid="modal-tambah-fasilitas"]')).toBeHidden();
-  await expect(page.locator('text=berhasil disimpan')).toBeVisible({ timeout: 10000 });
+// 1. Tunggu request Livewire
+const saveResponse = page.waitForResponse(
+  resp => resp.url().includes('livewire/message') && resp.status() === 200,
+  { timeout: 15000 }
+);
+
+// 2. Tunggu modal hilang
+await page.locator('[data-testid="modal-tambah-fasilitas"]').waitFor({
+  state: 'hidden',
+  timeout: 10000,
+});
+
+// 3. Pastikan save selesai
+await saveResponse;
+
+// 4. Cari baris baru
+const newRow = page.getByRole('row')
+  .filter({ hasText: new RegExp(`Ruang Teori 01.*Proyektor.*${nomorAkhir}.*Baik`) })
+  .last();
+
+await expect(newRow).toBeVisible({ timeout: 10000 });
+await expect(page.locator('table tbody tr')).toHaveCount(initialCount + 1);
 });
