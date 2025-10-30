@@ -1,62 +1,94 @@
 name: Playwright Tests
 on: [push, pull_request]
 jobs:
-  e2e:
+  test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10  # Tambah timeout job
+    timeout-minutes: 15
+
+    # === Tambah MySQL Service ===
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: pmpl_test_db
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - uses: actions/checkout@v4
-      
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, bcmath, pdo_mysql
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'  # Sesuaikan versi lokal
-      
-      - name: Setup PHP (Laravel)
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'  # Sesuaikan versi Laravel
-      
-      - name: Install Composer Dependencies
-        run: composer install --no-progress --no-interaction --optimize-autoloader
-      
-      - name: Install Node Dependencies
-        run: npm ci  # Atau yarn install --frozen-lockfile
-      
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps  # Install deps Ubuntu (fonts, libs)
-      
-      - name: Setup Laravel Testing Environment
+          node-version: '18'
+
+      - name: Install Composer deps
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Install Node deps
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      # === Tunggu MySQL siap ===
+      - name: Wait for MySQL
         run: |
-          # Copy .env.example ke .env.testing
+          sudo apt-get update
+          sudo apt-get install -y mysql-client
+          until mysqladmin ping -h 127.0.0.1 -P 3306 --silent; do
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
+      # === Setup Laravel ===
+      - name: Setup Laravel DB
+        run: |
           cp .env.example .env.testing
-          # Generate app key
           php artisan key:generate --env=testing
-          # Buat DB MySQL (atau gunakan SQLite untuk CI cepat)
-          sudo mysql -e "CREATE DATABASE IF NOT EXISTS pmpl_test_db;"
-          # Migrate + Seed (env testing)
+          # Migrate & Seed
           php artisan migrate:fresh --env=testing
           php artisan db:seed --class=RoleSeeder --env=testing
           php artisan db:seed --class=UserSeeder --env=testing
-      
-      - name: Start Laravel Server (Background)
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: pmpl_test_db
+          DB_USERNAME: root
+          DB_PASSWORD: root
+
+      # === Start Server ===
+      - name: Start Laravel Server
         run: |
           php artisan serve --host=127.0.0.1 --port=8000 --env=testing &
-          # Tunggu server ready (wait-on npm package)
           npm install -g wait-on
           wait-on http://127.0.0.1:8000
-      
+
+      # === Run Tests ===
       - name: Run Playwright Tests
         run: npx playwright test
         env:
-          # Secrets GitHub (Settings > Secrets > Actions)
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}  # Jika DB butuh pass
-          # Tambah env lain jika test pakai (e.g., API keys)
-      
-      - name: Upload Report (Selalu, bahkan gagal)
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: pmpl_test_db
+          DB_USERNAME: root
+          DB_PASSWORD: root
+
+      # === Upload Report ===
+      - name: Upload Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
-          retention-days: 30
