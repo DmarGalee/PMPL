@@ -1,7 +1,7 @@
 {
   "config": {
-    "configFile": "E:\\mapel\\laragon\\www\\PMPL\\QA-Simpelfas\\playwright.config.ts",
-    "rootDir": "E:/mapel/laragon/www/PMPL/QA-Simpelfas/tests/e2e",
+    "configFile": "D:\\App\\laragon\\www\\PMPL\\playwright.config.ts",
+    "rootDir": "D:/App/laragon/www/PMPL/tests/e2e",
     "forbidOnly": false,
     "fullyParallel": false,
     "globalSetup": null,
@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 3
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "reporter": [
@@ -35,15 +35,15 @@
     "quiet": false,
     "projects": [
       {
-        "outputDir": "E:/mapel/laragon/www/PMPL/QA-Simpelfas/test-results",
+        "outputDir": "D:/App/laragon/www/PMPL/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 3
+          "actualWorkers": 1
         },
         "id": "chromium",
         "name": "chromium",
-        "testDir": "E:/mapel/laragon/www/PMPL/QA-Simpelfas/tests/e2e",
+        "testDir": "D:/App/laragon/www/PMPL/tests/e2e",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -51,15 +51,15 @@
         "timeout": 30000
       },
       {
-        "outputDir": "E:/mapel/laragon/www/PMPL/QA-Simpelfas/test-results",
+        "outputDir": "D:/App/laragon/www/PMPL/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 3
+          "actualWorkers": 1
         },
         "id": "firefox",
         "name": "firefox",
-        "testDir": "E:/mapel/laragon/www/PMPL/QA-Simpelfas/tests/e2e",
+        "testDir": "D:/App/laragon/www/PMPL/tests/e2e",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -67,15 +67,15 @@
         "timeout": 30000
       },
       {
-        "outputDir": "E:/mapel/laragon/www/PMPL/QA-Simpelfas/test-results",
+        "outputDir": "D:/App/laragon/www/PMPL/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 3
+          "actualWorkers": 1
         },
         "id": "webkit",
         "name": "webkit",
-        "testDir": "E:/mapel/laragon/www/PMPL/QA-Simpelfas/tests/e2e",
+        "testDir": "D:/App/laragon/www/PMPL/tests/e2e",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -87,26 +87,26 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.56.1",
-    "workers": 4,
+    "workers": 1,
     "webServer": null
   },
   "suites": [
     {
-      "title": "user\\e2e-user-flow.spec.ts",
-      "file": "user/e2e-user-flow.spec.ts",
+      "title": "teknisi\\perbaikan.spec.ts",
+      "file": "teknisi/perbaikan.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Fitur Pelaporan Fasilitas oleh Mahasiswa",
-          "file": "user/e2e-user-flow.spec.ts",
-          "line": 4,
+          "title": "E2E Teknisi - Perbaikan",
+          "file": "teknisi/perbaikan.spec.ts",
+          "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "Mahasiswa dapat login dan mengirim laporan kerusakan",
-              "ok": true,
+              "title": "Teknisi ubah status perbaikan menjadi selesai",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -119,28 +119,52 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 6302,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 12282,
+                      "error": {
+                        "message": "Error: page.fill: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"login-nik\"]')\u001b[22m\n",
+                        "stack": "Error: page.fill: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"login-nik\"]')\u001b[22m\n\n    at D:\\App\\laragon\\www\\PMPL\\tests\\e2e\\teknisi\\perbaikan.spec.ts:9:16",
+                        "location": {
+                          "file": "D:\\App\\laragon\\www\\PMPL\\tests\\e2e\\teknisi\\perbaikan.spec.ts",
+                          "column": 16,
+                          "line": 9
+                        },
+                        "snippet": "\u001b[0m \u001b[90m  7 |\u001b[39m     \u001b[90m// 1. Login sebagai teknisi\u001b[39m\n \u001b[90m  8 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/login'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  9 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'[data-testid=\"login-nik\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'3333333333'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 10 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'[data-testid=\"login-password\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'12345'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 11 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'[data-testid=\"login-submit\"]'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 12 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForURL(\u001b[32m'/teknisi'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "D:\\App\\laragon\\www\\PMPL\\tests\\e2e\\teknisi\\perbaikan.spec.ts",
+                            "column": 16,
+                            "line": 9
+                          },
+                          "message": "Error: page.fill: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"login-nik\"]')\u001b[22m\n\n\n\u001b[0m \u001b[90m  7 |\u001b[39m     \u001b[90m// 1. Login sebagai teknisi\u001b[39m\n \u001b[90m  8 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/login'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  9 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'[data-testid=\"login-nik\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'3333333333'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 10 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'[data-testid=\"login-password\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'12345'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 11 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'[data-testid=\"login-submit\"]'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 12 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForURL(\u001b[32m'/teknisi'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at D:\\App\\laragon\\www\\PMPL\\tests\\e2e\\teknisi\\perbaikan.spec.ts:9:16\u001b[22m"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-10-30T16:50:09.315Z",
+                      "startTime": "2025-10-31T07:12:48.457Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "D:\\App\\laragon\\www\\PMPL\\tests\\e2e\\teknisi\\perbaikan.spec.ts",
+                        "column": 16,
+                        "line": 9
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "ff368035aa8e6dd14f84-24dd85c3c3a41c214361",
-              "file": "user/e2e-user-flow.spec.ts",
+              "id": "7b371968b1e45a4c3565-a2d423c4c5472e959100",
+              "file": "teknisi/perbaikan.spec.ts",
               "line": 5,
               "column": 3
             },
             {
-              "title": "Mahasiswa dapat login dan mengirim laporan kerusakan",
-              "ok": true,
+              "title": "Teknisi ubah status perbaikan menjadi selesai",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -152,29 +176,40 @@
                   "results": [
                     {
                       "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 13410,
-                      "errors": [],
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 30468,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded while setting up \"page\".\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded while setting up \"page\".\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded while setting up \"page\".\u001b[39m"
+                        },
+                        {
+                          "message": "Error: browserContext.newPage: Test timeout of 30000ms exceeded."
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-10-30T16:50:09.284Z",
+                      "startTime": "2025-10-31T07:13:20.023Z",
                       "annotations": [],
                       "attachments": []
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "ff368035aa8e6dd14f84-e91b580722ea5e6f27b4",
-              "file": "user/e2e-user-flow.spec.ts",
+              "id": "7b371968b1e45a4c3565-234f71e267896d36f54a",
+              "file": "teknisi/perbaikan.spec.ts",
               "line": 5,
               "column": 3
             },
             {
-              "title": "Mahasiswa dapat login dan mengirim laporan kerusakan",
-              "ok": true,
+              "title": "Teknisi ubah status perbaikan menjadi selesai",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -186,23 +221,47 @@
                   "results": [
                     {
                       "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 6302,
-                      "errors": [],
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 20224,
+                      "error": {
+                        "message": "Error: page.fill: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"login-nik\"]')\u001b[22m\n",
+                        "stack": "Error: page.fill: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"login-nik\"]')\u001b[22m\n\n    at D:\\App\\laragon\\www\\PMPL\\tests\\e2e\\teknisi\\perbaikan.spec.ts:9:16",
+                        "location": {
+                          "file": "D:\\App\\laragon\\www\\PMPL\\tests\\e2e\\teknisi\\perbaikan.spec.ts",
+                          "column": 16,
+                          "line": 9
+                        },
+                        "snippet": "\u001b[0m \u001b[90m  7 |\u001b[39m     \u001b[90m// 1. Login sebagai teknisi\u001b[39m\n \u001b[90m  8 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/login'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  9 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'[data-testid=\"login-nik\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'3333333333'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 10 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'[data-testid=\"login-password\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'12345'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 11 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'[data-testid=\"login-submit\"]'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 12 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForURL(\u001b[32m'/teknisi'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "D:\\App\\laragon\\www\\PMPL\\tests\\e2e\\teknisi\\perbaikan.spec.ts",
+                            "column": 16,
+                            "line": 9
+                          },
+                          "message": "Error: page.fill: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"login-nik\"]')\u001b[22m\n\n\n\u001b[0m \u001b[90m  7 |\u001b[39m     \u001b[90m// 1. Login sebagai teknisi\u001b[39m\n \u001b[90m  8 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/login'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  9 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'[data-testid=\"login-nik\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'3333333333'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 10 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'[data-testid=\"login-password\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'12345'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 11 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'[data-testid=\"login-submit\"]'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 12 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForURL(\u001b[32m'/teknisi'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at D:\\App\\laragon\\www\\PMPL\\tests\\e2e\\teknisi\\perbaikan.spec.ts:9:16\u001b[22m"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-10-30T16:50:09.359Z",
+                      "startTime": "2025-10-31T07:14:21.170Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "D:\\App\\laragon\\www\\PMPL\\tests\\e2e\\teknisi\\perbaikan.spec.ts",
+                        "column": 16,
+                        "line": 9
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "ff368035aa8e6dd14f84-c6c3f590774a42f31c84",
-              "file": "user/e2e-user-flow.spec.ts",
+              "id": "7b371968b1e45a4c3565-a545a8d68ca912511898",
+              "file": "teknisi/perbaikan.spec.ts",
               "line": 5,
               "column": 3
             }
@@ -213,11 +272,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-10-30T16:50:08.111Z",
-    "duration": 19382.707,
-    "expected": 3,
+    "startTime": "2025-10-31T07:12:15.107Z",
+    "duration": 156149.88400000002,
+    "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 3,
     "flaky": 0
   }
 }
